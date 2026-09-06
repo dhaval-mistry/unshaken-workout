@@ -1,0 +1,167 @@
+:root {
+  color: #17212b;
+  background: #f7f5ef;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible,
+[tabindex="-1"]:focus-visible {
+  outline: 3px solid #d05a3a;
+  outline-offset: 3px;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.site-header,
+.site-main,
+.site-footer {
+  width: min(100% - 2rem, 70rem);
+  margin-inline: auto;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+}
+
+.brand {
+  color: #17212b;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
+nav a {
+  color: #394b59;
+  text-decoration: none;
+}
+
+.site-main {
+  display: grid;
+  align-content: center;
+  padding-block: 3rem;
+}
+
+.site-footer {
+  border-top: 1px solid #d9d3c4;
+  color: #52606d;
+  font-size: 0.875rem;
+  padding: 1.25rem 0;
+}
+
+.welcome-panel,
+.route-error {
+  background: #fffdf8;
+  border: 1px solid #d9d3c4;
+  border-radius: 1rem;
+  box-shadow: 0 1rem 3rem rgb(23 33 43 / 8%);
+  max-width: 45rem;
+  padding: clamp(1.5rem, 5vw, 4rem);
+}
+
+h1 {
+  font-size: clamp(2rem, 8vw, 4.5rem);
+  letter-spacing: -0.06em;
+  line-height: 1;
+  margin: 0.4rem 0 1.25rem;
+}
+
+p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 58ch;
+}
+
+.eyebrow {
+  color: #9c3d24;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.connection-status {
+  align-items: center;
+  display: flex;
+  font-size: 0.95rem;
+  font-weight: 700;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+.status-dot {
+  background: #52606d;
+  border-radius: 50%;
+  height: 0.65rem;
+  width: 0.65rem;
+}
+.connection-status--available .status-dot {
+  background: #26734d;
+}
+.connection-status--unavailable .status-dot {
+  background: #b42318;
+}
+
+.button {
+  background: #17212b;
+  border-radius: 0.5rem;
+  color: #fff;
+  display: inline-block;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+}
+
+.skip-link {
+  background: #17212b;
+  color: #fff;
+  left: 1rem;
+  padding: 0.75rem 1rem;
+  position: absolute;
+  top: -5rem;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+@media (max-width: 30rem) {
+  .site-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .site-main {
+    align-content: start;
+    padding-block: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

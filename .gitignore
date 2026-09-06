@@ -1,0 +1,19 @@
+# Local environment values, dependency caches, and test/build output must not be committed.
+.env
+.env.*
+!.env.example
+
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+backend/.venv/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/coverage.xml
+backend/htmlcov/
+**/__pycache__/
+*.py[cod]
+
+.DS_Store

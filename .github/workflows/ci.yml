@@ -1,0 +1,60 @@
+name: Continuous integration
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[dev]"
+      - run: ruff format --check .
+      - run: ruff check .
+      - run: mypy app
+      - run: pytest
+
+  compose-configuration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose syntax with non-secret CI values
+        env:
+          POSTGRES_DB: unshaken_ci
+          POSTGRES_USER: unshaken_ci
+          POSTGRES_PASSWORD: local-ci-only
+          DATABASE_URL: postgresql+asyncpg://unshaken_ci:local-ci-only@database:5432/unshaken_ci
+          BACKEND_CORS_ORIGINS: '["http://localhost:5173"]'
+          FRONTEND_API_BASE_URL: http://localhost:8000
+        run: docker compose config
