@@ -29,4 +29,6 @@ async def readiness(request: Request) -> HealthResponse | JSONResponse:
     database = request.app.state.database
     if await database.check_connection():
         return HealthResponse(status="ok")
-    return JSONResponse(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content={"status": "unavailable"})
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content={"status": "unavailable"}
+    )

@@ -26,6 +26,12 @@ services:
       APP_ENVIRONMENT: development
       DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
       CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:?Set BACKEND_CORS_ORIGINS in .env}
+      EXERCISE_DB_BASE_URL: ${EXERCISE_DB_BASE_URL:-}
+      EXERCISE_DB_API_KEY: ${EXERCISE_DB_API_KEY:-}
+      EXERCISE_DB_HOST: ${EXERCISE_DB_HOST:-}
+      EXERCISE_DB_MEDIA_ENABLED: ${EXERCISE_DB_MEDIA_ENABLED:-false}
+      # Prefer bind-mounted source over the installed package during local development.
+      PYTHONPATH: /app
     depends_on:
       database:
         condition: service_healthy
@@ -34,11 +40,17 @@ services:
     build:
       context: ./backend
       target: development
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--no-access-log"]
     environment:
       APP_ENVIRONMENT: development
       DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
       CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:?Set BACKEND_CORS_ORIGINS in .env}
+      EXERCISE_DB_BASE_URL: ${EXERCISE_DB_BASE_URL:-}
+      EXERCISE_DB_API_KEY: ${EXERCISE_DB_API_KEY:-}
+      EXERCISE_DB_HOST: ${EXERCISE_DB_HOST:-}
+      EXERCISE_DB_MEDIA_ENABLED: ${EXERCISE_DB_MEDIA_ENABLED:-false}
+      # Prefer bind-mounted source over the installed package during local development.
+      PYTHONPATH: /app
     depends_on:
       migrations:
         condition: service_completed_successfully

@@ -1,11 +1,26 @@
 import json
 import logging
 
+import pytest
+
 from app.core.logging import JsonFormatter
 from app.core.request_context import set_correlation_id
 
 
-def test_json_formatter_redacts_sensitive_extra_fields() -> None:
+@pytest.mark.parametrize(
+    "field_name",
+    [
+        "access_token",
+        "token",
+        "password",
+        "secret",
+        "api_key",
+        "code",
+        "authorization",
+        "proxy_authorization",
+    ],
+)
+def test_json_formatter_redacts_sensitive_extra_fields(field_name: str) -> None:
     set_correlation_id("request-123")
     record = logging.makeLogRecord(
         {
@@ -14,7 +29,7 @@ def test_json_formatter_redacts_sensitive_extra_fields() -> None:
             "levelname": "INFO",
             "msg": "safe event",
             "args": (),
-            "access_token": "must-not-leak",
+            field_name: "must-not-leak",
             "action": "health_check",
         }
     )
@@ -22,5 +37,5 @@ def test_json_formatter_redacts_sensitive_extra_fields() -> None:
     payload = json.loads(JsonFormatter().format(record))
 
     assert payload["correlation_id"] == "request-123"
-    assert payload["access_token"] == "[redacted]"
+    assert payload[field_name] == "[redacted]"
     assert payload["action"] == "health_check"

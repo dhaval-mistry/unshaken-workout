@@ -1,7 +1,7 @@
 FROM node:22.12.0-alpine AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci
 
 FROM dependencies AS development
 COPY . .

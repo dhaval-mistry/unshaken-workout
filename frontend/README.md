@@ -1,8 +1,8 @@
 # Frontend
 
 The frontend is a Vite-powered React 18 and TypeScript single-page application.
-Its initial shell is intentionally limited to public technical-foundation content:
-responsive layout, routing, error handling, and an API health indicator.
+Its initial shell provides an accessible standard-exercise browse/search and detail
+experience, plus routing, error handling, and an API health indicator.
 
 ## Structure
 
@@ -17,7 +17,7 @@ responsive layout, routing, error handling, and an API health indicator.
 Run from this directory:
 
 ```sh
-npm install
+npm ci
 npm run dev
 npm run format:check
 npm run lint
@@ -34,5 +34,9 @@ which is useful when a reverse proxy serves both applications.
 
 The shell includes semantic landmarks, a skip link, visible keyboard focus, an
 `aria-live` health status, and a responsive navigation layout that works at 320px
-without horizontal scrolling. Future protected routes must be authorized by the
-API; client-side routes are not an authorization mechanism.
+without horizontal scrolling. The exercise screens provide labelled filters,
+loading/empty/error/retry states, semantic results and details, and keyboard-native
+links and buttons. They call only FastAPI's normalized `/api/exercises` routes;
+provider credentials and provider transport details never enter browser code.
+Future protected routes must be authorized by the API; client-side routes are not
+an authorization mechanism.

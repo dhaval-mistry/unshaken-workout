@@ -9,6 +9,12 @@ permissions:
   contents: read
 
 jobs:
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gitleaks/gitleaks-action@v2
+
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -27,12 +33,32 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Monitor lockfile dependency advisories
+        run: |
+          npm audit --package-lock-only
+          npm audit --package-lock-only --omit=dev
 
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.6-alpine
+        env:
+          POSTGRES_DB: unshaken_test
+          POSTGRES_USER: unshaken_test
+          POSTGRES_PASSWORD: test-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U unshaken_test -d unshaken_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
     defaults:
       run:
         working-directory: backend
+    env:
+      TEST_DATABASE_URL: postgresql+asyncpg://unshaken_test:test-only-password@127.0.0.1:5432/unshaken_test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -45,16 +71,9 @@ jobs:
       - run: mypy app
       - run: pytest
 
-  compose-configuration:
+  compose-runtime:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Compose syntax with non-secret CI values
-        env:
-          POSTGRES_DB: unshaken_ci
-          POSTGRES_USER: unshaken_ci
-          POSTGRES_PASSWORD: local-ci-only
-          DATABASE_URL: postgresql+asyncpg://unshaken_ci:local-ci-only@database:5432/unshaken_ci
-          BACKEND_CORS_ORIGINS: '["http://localhost:5173"]'
-          FRONTEND_API_BASE_URL: http://localhost:8000
-        run: docker compose config
+      - name: Validate, build, start, health-check, and redact Compose runtime logs
+        run: bash scripts/verify-compose-log-redaction.sh

@@ -8,6 +8,7 @@ decisions, and operational guidance.
 - `architecture/` — current technical boundaries and interfaces.
 - `decisions/` — concise Architecture Decision Records (ADRs).
 - `operations/` — local runbooks and troubleshooting guidance.
+- `integrations/` — live third-party provider setup and usage limits.
 
 ## Setup and troubleshooting
 

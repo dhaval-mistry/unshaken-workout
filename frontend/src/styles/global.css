@@ -134,6 +134,125 @@ p {
   text-decoration: none;
 }
 
+button,
+input {
+  font: inherit;
+}
+
+button {
+  background: #17212b;
+  border: 0;
+  border-radius: 0.5rem;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+input {
+  border: 1px solid #8b98a5;
+  border-radius: 0.4rem;
+  display: block;
+  margin-top: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.65rem;
+  width: 100%;
+}
+
+.catalog-page,
+.exercise-detail {
+  width: 100%;
+}
+
+.catalog-filters {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-block: 2rem;
+}
+
+.catalog-filters button {
+  align-self: end;
+}
+
+.exercise-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+}
+
+.exercise-card,
+.exercise-detail,
+.notice {
+  background: #fffdf8;
+  border: 1px solid #d9d3c4;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.exercise-card h2,
+.exercise-detail h2 {
+  font-size: 1.3rem;
+}
+
+.source-notice,
+.media-fallback,
+.result-summary {
+  color: #52606d;
+  font-size: 0.9rem;
+}
+
+.notice--error {
+  border-color: #b42318;
+}
+
+.pagination {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-block: 2rem;
+}
+
+.exercise-facts {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.exercise-facts div {
+  border-bottom: 1px solid #d9d3c4;
+  padding-bottom: 0.75rem;
+}
+
+.exercise-facts dt {
+  color: #52606d;
+  font-weight: 700;
+}
+
+.exercise-facts dd {
+  margin: 0.25rem 0 0;
+}
+
+.exercise-media {
+  display: block;
+  height: auto;
+  max-width: min(100%, 32rem);
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
 .skip-link {
   background: #17212b;
   color: #fff;
@@ -154,6 +273,13 @@ p {
   .site-main {
     align-content: start;
     padding-block: 1.5rem;
+  }
+  .catalog-filters {
+    grid-template-columns: 1fr;
+  }
+  .pagination {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 

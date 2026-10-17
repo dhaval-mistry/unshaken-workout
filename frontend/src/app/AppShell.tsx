@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 
-/** Shared accessible page frame for public and future authenticated routes. */
+/** Shared accessible page frame for the catalog and future approved routes. */
 export function AppShell() {
   return (
     <div className="app-shell">
@@ -12,7 +12,7 @@ export function AppShell() {
           Unshaken
         </NavLink>
         <nav aria-label="Primary navigation">
-          <NavLink to="/">Foundation</NavLink>
+          <NavLink to="/exercises">Exercises</NavLink>
         </nav>
       </header>
       <main id="main-content" className="site-main" tabIndex={-1}>
