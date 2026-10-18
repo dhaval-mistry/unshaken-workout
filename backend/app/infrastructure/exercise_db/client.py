@@ -53,12 +53,19 @@ class ExerciseCatalog(Protocol):
         query: str | None,
         body_part: str | None,
         equipment: str | None,
+        target: str | None,
         exercise_type: str | None,
         limit: int,
         offset: int,
     ) -> ExerciseSearchResult: ...
 
     async def get_by_id(self, exercise_id: str) -> NormalizedExercise: ...
+
+    async def list_values(self, kind: str) -> list[str]: ...
+
+    async def status(self) -> bool: ...
+
+    async def get_image(self, exercise_id: str) -> tuple[bytes, str]: ...
 
 
 def _string_list(value: Any) -> list[str]:
@@ -157,20 +164,35 @@ class ExerciseDbClient:
         query: str | None,
         body_part: str | None,
         equipment: str | None,
+        target: str | None,
         exercise_type: str | None,
         limit: int,
         offset: int,
     ) -> ExerciseSearchResult:
-        params: dict[str, str | int] = {"limit": limit, "offset": offset}
-        for key, value in {
-            "name": query,
-            "bodyPart": body_part,
-            "equipment": equipment,
-            "exerciseType": exercise_type,
-        }.items():
-            if value:
-                params[key] = value
-        response = await self._request("/exercises", params)
+        # This provider offers separate filter paths, not combined query filters.
+        filters = [
+            ("name", query),
+            ("bodyPart", body_part),
+            ("equipment", equipment),
+            ("target", target),
+        ]
+        if exercise_type or sum(bool(value) for _, value in filters) > 1:
+            raise ValueError("ExerciseDB supports one filter at a time and no exercise type filter")
+        selected = next(((kind, value) for kind, value in filters if value), None)
+        path = (
+            f"/exercises/{selected[0]}/{quote(selected[1], safe='')}"
+            if selected is not None
+            else "/exercises"
+        )
+        response = await self._request(
+            path,
+            {
+                "limit": limit,
+                "offset": offset,
+                "sortMethod": "name",
+                "sortOrder": "ascending",
+            },
+        )
         try:
             body: object = response.json()
         except ValueError as error:
@@ -199,3 +221,33 @@ class ExerciseDbClient:
             return normalize_exercise(response.json(), allow_media=self._allow_media)
         except ValueError as error:
             raise ExerciseCatalogUnavailableError("invalid_response") from error
+
+    async def list_values(self, kind: str) -> list[str]:
+        paths = {
+            "body_parts": "/exercises/bodyPartList",
+            "targets": "/exercises/targetList",
+            "equipment": "/exercises/equipmentList",
+        }
+        if kind not in paths:
+            raise ValueError("Unknown ExerciseDB taxonomy")
+        response = await self._request(paths[kind], {})
+        try:
+            payload = response.json()
+        except ValueError as error:
+            raise ExerciseCatalogUnavailableError("invalid_response") from error
+        if not isinstance(payload, list) or any(not isinstance(item, str) for item in payload):
+            raise ExerciseCatalogUnavailableError("invalid_response")
+        return _string_list(payload)
+
+    async def status(self) -> bool:
+        await self._request("/status", {})
+        return True
+
+    async def get_image(self, exercise_id: str) -> tuple[bytes, str]:
+        if not self._allow_media:
+            raise ExerciseCatalogUnavailableError("media_not_enabled")
+        response = await self._request(f"/image/{quote(exercise_id, safe='')}", {})
+        content_type = response.headers.get("Content-Type", "").split(";", 1)[0].lower()
+        if content_type not in {"image/gif", "image/jpeg", "image/png", "image/webp"}:
+            raise ExerciseCatalogUnavailableError("invalid_response")
+        return response.content, content_type

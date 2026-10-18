@@ -13,7 +13,7 @@ services:
       timeout: 3s
       retries: 20
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -30,6 +30,9 @@ services:
       EXERCISE_DB_API_KEY: ${EXERCISE_DB_API_KEY:-}
       EXERCISE_DB_HOST: ${EXERCISE_DB_HOST:-}
       EXERCISE_DB_MEDIA_ENABLED: ${EXERCISE_DB_MEDIA_ENABLED:-false}
+      DEVELOPMENT_USER_ID: ${DEVELOPMENT_USER_ID:-}
+      DEVELOPMENT_USER_EMAIL: ${DEVELOPMENT_USER_EMAIL:-local@unshaken.invalid}
+      DEVELOPMENT_USER_DISPLAY_NAME: ${DEVELOPMENT_USER_DISPLAY_NAME:-Local User}
       # Prefer bind-mounted source over the installed package during local development.
       PYTHONPATH: /app
     depends_on:
@@ -49,13 +52,16 @@ services:
       EXERCISE_DB_API_KEY: ${EXERCISE_DB_API_KEY:-}
       EXERCISE_DB_HOST: ${EXERCISE_DB_HOST:-}
       EXERCISE_DB_MEDIA_ENABLED: ${EXERCISE_DB_MEDIA_ENABLED:-false}
+      DEVELOPMENT_USER_ID: ${DEVELOPMENT_USER_ID:-}
+      DEVELOPMENT_USER_EMAIL: ${DEVELOPMENT_USER_EMAIL:-local@unshaken.invalid}
+      DEVELOPMENT_USER_DISPLAY_NAME: ${DEVELOPMENT_USER_DISPLAY_NAME:-Local User}
       # Prefer bind-mounted source over the installed package during local development.
       PYTHONPATH: /app
     depends_on:
       migrations:
         condition: service_completed_successfully
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - ./backend:/app
 

@@ -11,6 +11,7 @@
 - Do not copy source code, visual design, icons, wording, or assets from existing fitness applications.
 - Only one write-capable agent may modify files at a time.
 - Do not claim that tests passed unless they were actually executed.
+- Please make sure you add necessary code commenting in each files, if necessary please explain the code as well. 
 
 # Agent coordination
 

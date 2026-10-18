@@ -30,6 +30,15 @@ class CatalogStub:
         assert exercise_id == "exr_123"
         return self._exercise()
 
+    async def list_values(self, kind: str) -> list[str]:
+        return [kind]
+
+    async def status(self) -> bool:
+        return True
+
+    async def get_image(self, exercise_id: str) -> tuple[bytes, str]:
+        return b"GIF89a", "image/gif"
+
     @staticmethod
     def _exercise() -> NormalizedExercise:
         return NormalizedExercise(
@@ -61,6 +70,7 @@ def test_catalog_returns_normalized_page_and_bounded_query() -> None:
         "query": "press",
         "body_part": None,
         "equipment": None,
+        "target": None,
         "exercise_type": None,
         "limit": 20,
         "offset": 20,
@@ -104,3 +114,37 @@ def test_catalog_rejects_unbounded_page_size_and_invalid_detail_identifier() -> 
 
     assert page_response.status_code == 422
     assert id_response.status_code == 422
+
+
+def test_catalog_taxonomy_status_filter_and_image_routes() -> None:
+    stub = CatalogStub()
+    with build_client(stub) as client:
+        assert client.get("/api/exercises/status").json() == {"available": True}
+        assert client.get("/api/exercises/body-parts").json() == {"items": ["body_parts"]}
+        assert client.get("/api/exercises/targets").json() == {"items": ["targets"]}
+        assert client.get("/api/exercises/equipment").json() == {"items": ["equipment"]}
+        for path, key in [
+            ("/api/exercises/search/press", "query"),
+            ("/api/exercises/target/biceps", "target"),
+            ("/api/exercises/body-part/chest", "body_part"),
+            ("/api/exercises/equipment/barbell", "equipment"),
+        ]:
+            response = client.get(path)
+            assert response.status_code == 200
+            assert stub.last_search is not None
+            assert stub.last_search[key] == path.rsplit("/", 1)[1]
+        image = client.get("/api/exercises/image/exr_123")
+
+    assert image.status_code == 200
+    assert image.content == b"GIF89a"
+    assert image.headers["content-type"] == "image/gif"
+    assert image.headers["cache-control"] == "no-store"
+
+
+def test_catalog_rejects_unsupported_combined_filters_and_type_filter() -> None:
+    with build_client(CatalogStub()) as client:
+        combined = client.get("/api/exercises?query=press&equipment=barbell")
+        exercise_type = client.get("/api/exercises?exercise_type=strength")
+
+    assert combined.status_code == 422
+    assert exercise_type.status_code == 422

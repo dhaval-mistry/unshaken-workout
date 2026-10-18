@@ -1,6 +1,7 @@
 """Environment-backed settings for the API process."""
 
 from functools import lru_cache
+from uuid import UUID
 
 from pydantic import Field, HttpUrl, PostgresDsn, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -22,6 +23,10 @@ class Settings(BaseSettings):
     exercise_db_api_key: SecretStr | None = None
     exercise_db_host: str | None = None
     exercise_db_media_enabled: bool = False
+    # Temporary identity for local API development; real authentication replaces this.
+    development_user_id: UUID | None = None
+    development_user_email: str = "local@unshaken.invalid"
+    development_user_display_name: str = "Local User"
 
     @field_validator(
         "exercise_db_base_url", "exercise_db_api_key", "exercise_db_host", mode="before"

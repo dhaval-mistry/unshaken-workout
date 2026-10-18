@@ -40,3 +40,8 @@ class Database:
 
         async with self.session_factory() as session:
             yield session
+
+    def new_session(self) -> AsyncSession:
+        """Create a request-scoped session for FastAPI dependency injection."""
+
+        return self.session_factory()
